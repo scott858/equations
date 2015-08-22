@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="1251049861">
+    <data-source source="LOCAL" name="SQLite -" uuid="22dbd5f9-0b65-4ac3-b8c4-e0bee4d7c466">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$USER_HOME$/.ipython/profile_default/history.sqlite</jdbc-url>
+      <libraries />
+    </data-source>
+  </component>
+</project>
