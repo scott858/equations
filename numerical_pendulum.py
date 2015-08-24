@@ -7,16 +7,21 @@ sp.init_printing()
 from scipy.integrate import odeint as sp_odeint
 
 
-def f(y, t):
-    return [y[1], -np.sin(y[0]) - np.sin(y[0] - 2 * t)]
+def v_(z, t):
+    return np.array([z[1], -np.sin(z[0]) - np.sin(z[0] - 2 * t)])
 
 
-t0 = 0
-t1 = 200
+ti = 0
+tf = 200
 dt = .1
-y0 = [-.5, 0]
+xi_vi = [-.5, 0]
 
-t2 = np.linspace(0, 200, 20001)
-y2 = sp_odeint(f, y0, t2)
-plt.plot(t2, y2)
+t2 = np.linspace(ti, tf, 20001)
+t1 = np.linspace(ti, tf, 2001)
+
+x1_v1 = sp_odeint(v_, xi_vi, t1)
+x2_v2 = sp_odeint(v_, xi_vi, t2)
+
+plt.plot(t2, x2_v2)
+plt.plot(t1, x1_v1)
 plt.show()
