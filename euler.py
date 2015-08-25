@@ -6,6 +6,7 @@ logger = logging.getLogger(__name__)
 
 sp.init_printing()
 
+
 class Euler:
     @staticmethod
     def _f_default(t, v):
@@ -15,10 +16,10 @@ class Euler:
         self._delta_t = delta_t
         self._time_interval = time_interval
         self._z0 = z0
+        self._z_array = self._z0.copy()
 
         self._time_steps = int(self._time_interval / self._delta_t)
 
-        self._z_array = np.array([self._z0])
         self._f = Euler._f_default
 
         self._time_array = np.linspace(0, time_interval, time_interval / delta_t + 1)
@@ -45,31 +46,33 @@ class Euler:
     def _t(self, n):
         return n * self._delta_t
 
-    def v(self):
-        return self._v_recursion(self.time_steps)
+    def z(self):
+        return self._z_recursion(self.time_steps)
 
-    def _v_recursion(self, n):
+    def _z_recursion(self, n):
         if not type(n) == int:
             raise ValueError('n must be an integer')
         elif n < 0:
             raise ValueError('n must be greater than 0')
+        elif n == 0:
+            return self._z_array
         else:
             try:
-                return self._z_array[n]
+                return self._z_array[n, :, :]
             except IndexError as err:
                 logger.info(err)
 
-            vn = self._step_calc(n)
-            self._z_array = np.append(self._z_array, [vn], axis=0)
-            return vn
+            zn = self._step_calc(n)
+            self._z_array = np.append(self._z_array, zn, axis=0)
+            return zn
 
     def _step_calc(self, n):
         dt = self._delta_t
         tn_1 = self._t(n - 1)
-        vn_1 = self._v_recursion(n - 1)
+        zn_1 = self._z_recursion(n - 1)
 
-        vn = vn_1 + dt * self._f(tn_1, vn_1)
-        return vn
+        zn = zn_1 + dt * self._f(tn_1, zn_1)
+        return zn
 
 
 class PredictorCorrector(Euler):
@@ -81,11 +84,11 @@ class PredictorCorrector(Euler):
         tn_1 = self._t(n - 1)
         tn = self._t(n)
 
-        vn_1 = self._v_recursion(n - 1)
+        zn_1 = self._z_recursion(n - 1)
 
-        vn_euler = vn_1 + dt * self._f(tn_1, vn_1)
-        vn_pc = vn_1 + (dt / 2) * (self._f(tn_1, vn_1) + self._f(tn, vn_euler))
-        return vn_pc
+        zn_euler = zn_1 + dt * self._f(tn_1, zn_1)
+        zn_pc = zn_1 + (dt / 2) * (self._f(tn_1, zn_1) + self._f(tn, zn_euler))
+        return zn_pc
 
 
 class RungeKutta(Euler):
@@ -95,11 +98,11 @@ class RungeKutta(Euler):
     def _step_calc(self, n):
         dt = self._delta_t
         tn_1 = self._t(n - 1)
-        vn_1 = self._v_recursion(n - 1)
+        zn_1 = self._z_recursion(n - 1)
 
-        k1 = self._f(tn_1, vn_1)
-        k2 = self._f(tn_1 + dt / 2, vn_1 + dt * k1 / 2)
-        k3 = self._f(tn_1 + dt / 2, vn_1 + dt * k2 / 2)
-        k4 = self._f(tn_1 + dt, vn_1 + dt * k3)
-        vn = vn_1 + (dt / 6) * (k1 + 2 * k2 + 2 * k3 + k4)
-        return vn
+        k1 = self._f(tn_1, zn_1)
+        k2 = self._f(tn_1 + dt / 2, zn_1 + dt * k1 / 2)
+        k3 = self._f(tn_1 + dt / 2, zn_1 + dt * k2 / 2)
+        k4 = self._f(tn_1 + dt, zn_1 + dt * k3)
+        zn = zn_1 + (dt / 6) * (k1 + 2 * k2 + 2 * k3 + k4)
+        return zn
