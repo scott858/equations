@@ -1,8 +1,11 @@
 import sympy as sp
 import numpy as np
-import matplotlib.pylab as plt
+import matplotlib
+matplotlib.use('QT4Agg')
+import matplotlib.pyplot as plt
 import sys
 import resource
+from matplotlib.colors import cnames
 import matplotlib.animation as animation
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -16,9 +19,9 @@ sys.setrecursionlimit(1000000)
 resource.setrlimit(resource.RLIMIT_STACK, (2 ** 29, -1))
 
 ti = 0
-tf = 200
+tf = 2000
 time_interval = tf - ti
-dt = .01
+dt = .1
 G = 10 ** -0
 
 number_particles = 4
@@ -65,14 +68,12 @@ def f(t, z):
 
     return np.array([[v, force]])
 
-z0 = np.random.rand(1, phase_index, particle_index) - .5
-z0 = np.array([[[-10, 0, 0, 10, 0, 0, 0, 10, 0, 0, -10, 0], [0, -1, 0, 0, 1, 0, 1, 0, 0, -1, 0, 0]]])
-# z0 = np.array([[[-100, 0, 100, 0, 0, 100, 0, -100], [0, -1, 0, 1, 1, 0, -1, 0]]])
 
-rk = RungeKutta(delta_t=dt, time_interval=time_interval, z0=z0)
+z0 = np.array([[[-10, 0, 0, 10, 0, 0, 0, 10, 0, 0, -10, 0], [0, -1, 0, 0, 1, 0, 1, 0, 0, -1, 0, 0]]])
+
+rk = RungeKutta(delta_t=dt, time_interval=time_interval, w0=z0)
 rk.set_f(f)
 rk.z()
-plt.subplots(1)
 positions = rk.z_array[:, 0, :]
 
 x1 = rk.z_array[:, 0, 0]
@@ -91,84 +92,48 @@ x4 = rk.z_array[:, 0, 8]
 y4 = rk.z_array[:, 0, 9]
 z4 = rk.z_array[:, 0, 10]
 
-fig2 = plt.figure()
-ax = fig2.add_subplot(111, autoscale_on=False, projection='3d')
-# ax = Axes3D(fig2)
-ax.grid()
-lim = 100
+x = np.array([x1, x2, x3, x4])
+y = np.array([y1, y2, y3, y4])
+z = np.array([z1, z2, z3, z4])
+
+trajectories = []
+fig = plt.figure()
+ax = fig.add_axes([0, 0, 1, 1], projection='3d')
+
+colors = plt.cm.jet(np.linspace(0, 1, number_particles))
+lines = sum([ax.plot([], [], [], '.', c=c) for c in colors], [])
+
+lim = 20
 ax.set_xlim3d([-lim, lim])
 ax.set_ylim3d([-lim, lim])
 ax.set_zlim3d([-lim, lim])
-
-line, = ax.plot([], [], [], '.')
-time_template = 'time = %.1fs'
-time_text = ax.text(0.5, 0.9, 0.5, '', transform=ax.transAxes)
+# time_template = 'time = %.1fs'
+# time_text = ax.text(0.05, 0.9, 0.05, '', transform=ax.transAxes)
 
 
 def init():
-    line.set_data(x1[0], y1[0])
-    line.set_3d_properties(z1[0])
-    time_text.set_text('')
-    return line, time_text
+    for line in lines:
+        line.set_data([], [])
+        line.set_3d_properties([])
+
+    return lines
 
 
+stride = 5
 def animate(i):
-    x = [x1[:i], x2[:i], x3[:i], x4[:i]]
-    y = [y1[:i], y2[:i], y3[:i], y4[:i]]
-    z = [z1[:i], z2[:i], z3[:i], z4[:i]]
+    xi = x[:, :i]
+    yi = y[:, :i]
+    zi = z[:, :i]
+    for j, line in enumerate(lines, start=0):
+        line.set_data(xi[j, -1:], yi[j, -1:])
+        line.set_3d_properties(zi[j, -1:])
 
-    line.set_data(z1, y1)
-    line.set_3d_properties(z1)
-    time_text.set_text(time_template % (i * dt))
-    return line, time_text
+    fig.canvas.draw()
+    # time_text.set_text(time_template % (i * dt))
+    return lines
 
-# ani = animation.FuncAnimation(fig2, animate, np.arange(1, len(y1)), interval=.1, blit=True)
-ani = animation.FuncAnimation(fig2, animate, np.arange(1, len(x1)), interval=.1, blit=True, init_func=init)
 
+trajectory_index = np.arange(1, len(x1), 5)
+ani = animation.FuncAnimation(fig, animate, trajectory_index, interval=1, blit=True, init_func=init)
 # ani.save('particles.mp4', writer='mencoder', fps=15)
 plt.show()
-
-# print(z0)
-# print('\n')
-# print(r(0, 0, z0))
-# print('\n')
-# print(v(0, 0, z0))
-# print('\n')
-# print(central_force(0, 1, 0, z0))
-# print('\n')
-# print(f(0, z0))
-
-# rk = RungeKutta(delta_t=dt, time_interval=time_interval, z0=z0)
-# rk.set_f(f)
-# rk.z()
-
-# print(rk.time_array)
-# print('\n')
-# print(rk.z_array)
-# print('\n')
-# print(rk.z_array[:, 0, 1])
-# print('\n')
-# print(rk.z_array.shape)
-# plt.subplots(1)
-# plt.plot(rk.time_array, rk.z_array[:, 0, :])
-# plt.subplots(1)
-# plt.plot(rk.time_array, rk.z_array[:, 1, :])
-# plt.show()
-
-
-
-# def v_(t, z):
-#     return np.array([z[0, 1], -np.sin(z[0, 0]) - np.sin(z[0, 0] - 2 * t)])
-#
-#
-# ti = 0
-# tf = 200
-# time_interval = tf - ti
-# dt = .1
-# z0 = np.array([[[-.5], [0]]])
-#
-# rk = RungeKutta(delta_t=dt, time_interval=time_interval, z0=z0)
-# rk.set_f(v_)
-# rk.z()
-# plt.plot(rk.time_array, rk.z_array[:, 0, :])
-# plt.show()

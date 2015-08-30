@@ -92,8 +92,8 @@ class PredictorCorrector(Euler):
 
 
 class RungeKutta(Euler):
-    def __init__(self, delta_t, time_interval, z0):
-        super().__init__(delta_t=delta_t, time_interval=time_interval, z0=z0)
+    def __init__(self, delta_t, time_interval, w0):
+        super().__init__(delta_t=delta_t, time_interval=time_interval, z0=w0)
 
     def _step_calc(self, n):
         dt = self._delta_t

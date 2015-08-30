@@ -67,7 +67,7 @@ def f(t, z):
 z0 = np.random.rand(1, phase_index, particle_index) - .5
 z0 = np.array([[[-100, 0, 100, 0, 0, 100, 0, -100], [0, -1, 0, 1, 1, 0, -1, 0]]])
 
-rk = RungeKutta(delta_t=dt, time_interval=time_interval, z0=z0)
+rk = RungeKutta(delta_t=dt, time_interval=time_interval, w0=z0)
 rk.set_f(f)
 rk.z()
 plt.subplots(1)
