@@ -8,7 +8,7 @@ import sys
 import resource
 import matplotlib.animation as animation
 from mpl_toolkits.mplot3d import Axes3D
-from .solar_system_data import *
+from solar_system.solar_system_data import *
 
 sp.init_printing()
 
@@ -54,7 +54,7 @@ def central_force(i, j, w):
     mag_displacement = np.dot(displacement, displacement)
     mag_displacement = np.sqrt(mag_displacement)
     mj = masses[j]
-    v_ = G * displacement * mj / (mag_displacement ** 3)
+    v_ = np.multiply(displacement, G * mj / (mag_displacement ** 3))
     return v_
 
 
@@ -87,61 +87,74 @@ t = np.arange(0, time_interval, dt, dtype=np.float64)
 def run():
     # w, s = sp_odeint(f, w0, t, full_output=True)
     w = sp_odeint(f, w0, t)
-    # print(w[-1])
-    # print(s)
-
-    # fig = plt.figure()
-    # ax = fig.add_axes([0, 0, 1, 1], projection='3d')
-    # ax.patch.set_facecolor('black')
-    # ax.axis('off')
-    #
-    # colors = (
-    # '#ffff00', '#cc0000', '#ff0000', '#00ffff', '#cc0066', '#663300', '#ff3300', '#ff6699', '#9933ff', '#33ccff',)
-    # widths = np.log(1 + masses / m_sun)
-    # widths = widths / np.min(widths)
-    # widths = 1 + np.log(widths)
-    # widths = np.floor(widths)
-    # lines = sum([ax.plot([], [], [], '.', c=c, ms=width) for c, width in zip(colors, widths)], [])
-    #
-    # lim = 20 * earth_distance
-    #
-    # ax.set_xlim3d([-lim, lim])
-    # ax.set_ylim3d([-lim, lim])
-    # # lim = lim / 10
-    # ax.set_zlim3d([-lim, lim])
-    # time_template = 'time = %.1fdays'
-    # time_text = ax.text(0.05, 0.9, 0.05, '', transform=ax.transAxes)
-    # time_text.set_color('#ffffff')
-    #
-    # def init():
-    #     for line in lines:
-    #         line.set_data([], [])
-    #         line.set_3d_properties([])
-    #     return lines
-    #
-    # def animate(i):
-    #     for j, line in enumerate(lines, start=0):
-    #         x = w[i, number_dimensions * j]
-    #         y = w[i, number_dimensions * j + 1]
-    #         z = w[i, number_dimensions * j + 2]
-    #         line.set_data(x, y)
-    #         line.set_3d_properties(z)
-    #
-    #     fig.canvas.draw()
-    #     time_text.set_text(time_template % (i * dt / (seconds_per_hour * hours_per_day)))
-    #     return lines
-
-    # stride = 5
-    # trajectory_index = np.arange(1, w.shape[0], 10)
-    # ani = animation.FuncAnimation(fig, animate, trajectory_index, interval=1, blit=True)
-    # ani.save('particles.mp4', writer='mencoder', fps=15)
-
-    # for c, j in zip(colors, range(number_particles)):
-    #     # all
-    #     x = w[:, number_dimensions * j]
-    #     y = w[:, number_dimensions * j + 1]
-    #     z = w[:, number_dimensions * j + 2]
-    #     ax.plot(x, y, z, c)
-
-    # plt.show()
     return w
+
+
+def solar_animate(w):
+    fig = plt.figure()
+    ax = fig.add_axes([0, 0, 1, 1], projection='3d')
+    ax.patch.set_facecolor('black')
+    ax.axis('off')
+
+    colors = (
+        '#ffff00', '#cc0000', '#ff0000', '#00ffff', '#cc0066', '#663300', '#ff3300', '#ff6699', '#9933ff', '#33ccff',)
+    widths = np.log(1 + masses / m_sun)
+    widths = widths / np.min(widths)
+    widths = 1 + np.log(widths)
+    widths = np.floor(widths)
+    lines = sum([ax.plot([], [], [], '.', c=c, ms=width) for c, width in zip(colors, widths)], [])
+
+    lim = 20 * earth_distance
+
+    ax.set_xlim3d([-lim, lim])
+    ax.set_ylim3d([-lim, lim])
+    # lim = lim / 10
+    ax.set_zlim3d([-lim, lim])
+    time_template = 'time = %.1fdays'
+    time_text = ax.text(0.05, 0.9, 0.05, '', transform=ax.transAxes)
+    time_text.set_color('#ffffff')
+
+    def init():
+        for line in lines:
+            line.set_data([], [])
+            line.set_3d_properties([])
+        return lines
+
+    def animate(i):
+        for j, line in enumerate(lines, start=0):
+            x = w[i, number_dimensions * j]
+            y = w[i, number_dimensions * j + 1]
+            z = w[i, number_dimensions * j + 2]
+            line.set_data(x, y)
+            line.set_3d_properties(z)
+
+        fig.canvas.draw()
+        time_text.set_text(time_template % (i * dt / (seconds_per_hour * hours_per_day)))
+        return lines
+
+    trajectory_index = np.arange(1, w.shape[0], 10)
+    ani = animation.FuncAnimation(fig, animate, trajectory_index, interval=1, blit=True)
+    ani.save('particles.mp4', writer='mencoder', fps=15)
+
+    plt.show()
+
+
+def solar_plot(w):
+    fig = plt.figure()
+    ax = fig.add_axes([0, 0, 1, 1], projection='3d')
+    ax.patch.set_facecolor('black')
+    ax.axis('off')
+
+    colors = (
+        '#ffff00', '#cc0000', '#ff0000', '#00ffff', '#cc0066', '#663300', '#ff3300', '#ff6699', '#9933ff', '#33ccff',)
+
+    for c, j in zip(colors, range(number_particles)):
+        # all
+        x = w[:, number_dimensions * j]
+        y = w[:, number_dimensions * j + 1]
+        z = w[:, number_dimensions * j + 2]
+        ax.plot(x, y, z, c)
+
+if __name__ == '__main__':
+    import cProfile
+    cProfile.run('run()', sort='time')
