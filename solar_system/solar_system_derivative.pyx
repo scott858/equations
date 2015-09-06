@@ -1,42 +1,41 @@
 # cython: profile=True
+include 'solar_system_data_cy.pxi'
+# from solar_system.solar_system_data import *
 from libc.math cimport pow, sqrt
-from solar_system.solar_system_data import *
-
-phase_index = 2
-start_v_index = number_particles * number_dimensions
 
 
-cdef double[:] r_cy(int i, double[:] w):
+cpdef get_t():
+    return np.arange(0, time_interval, dt, dtype=np.double)
+
+
+cpdef get_w0():
+    w0 = np.array([], dtype=np.double)
+    for x0i, y0i, z0i in zip(x0, y0, z0):
+        w0 = np.concatenate([w0, [x0i], [y0i], [z0i]])
+    for vx0i, vy0i, vz0i in zip(vx0, vy0, vz0):
+        w0 = np.concatenate([w0, [vx0i], [vy0i], [vz0i]])
+    return w0
+
+
+cdef double[:] r(int i, double[:] w):
     cdef:
         int start_index, end_index
     start_index = i * number_dimensions
     end_index = (i + 1) * number_dimensions
-
-    cdef double[:] ri = np.empty(end_index - start_index, dtype=np.double)
-    ri = w[start_index:end_index]
-    return ri
+    return w[start_index:end_index]
 
 
-cdef double[:] my_subtract(double[:] x, double[:] y):
-    cdef:
-        int i
-        double[:] x_minus_y = np.empty(x.shape[0], dtype=np.double)
-
-    for i in range(x.shape[0]):
-        x_minus_y[i] = x[i] - y[i]
-
-    return x_minus_y
-
-
+cdef double[:] displacement = np.empty(number_dimensions, dtype=np.double)
 cdef double[:] central_force(int i, int j, double[:] w):
     cdef:
         double mj, mag_displacement = 0
         double force_coefficient
         int k
     # exerted on i by j
-    rj = r_cy(j, w)
-    ri = r_cy(i, w)
-    displacement = my_subtract(rj, ri)
+    rj = r(j, w)
+    ri = r(i, w)
+    for k in range(rj.shape[0]):
+        displacement[k] = rj[k] - ri[k]
 
     for k in range(displacement.shape[0]):
         mag_displacement += displacement[k] * displacement[k]
@@ -49,14 +48,14 @@ cdef double[:] central_force(int i, int j, double[:] w):
         displacement[k] = force_coefficient * displacement[k]
     return displacement
 
-
+cdef:
+    double[:] particle_force = np.empty(number_dimensions, dtype=np.double)
+    double[:] central_force_ij = np.empty(number_dimensions, dtype=np.double)
+    double[:] w_ = np.empty(2 * number_dimensions * number_particles, np.double)
+    int v_start = number_dimensions * number_particles
 cdef double[:] f_core(double[:] w):
     cdef:
-        int v_start, i, j, start_index, end_index
-        double[:] particle_force = np.empty(number_dimensions, dtype=np.double)
-        double[:] central_force_ij = np.empty(number_dimensions, dtype=np.double)
-        double[:] w_ = np.empty(w.shape[0], np.double)
-    v_start = number_dimensions * number_particles
+        int i, j, start_index, end_index
     w_[:v_start] = w[v_start:]
     for i in range(number_particles):
         particle_force[0] = 0
@@ -82,24 +81,3 @@ cdef double[:] f_core(double[:] w):
 def f(w, t):
     # f = dv / dt
     return np.asarray(f_core(np.asarray(w, dtype=np.double)), dtype=np.double)
-
-
-def v(int i, w):
-    cdef:
-        int start_index, end_index
-    start_index = i * number_dimensions
-    end_index = (i + 1) * number_dimensions
-    vi = w[start_v_index + start_index:end_index]
-    return vi
-
-
-def r(int i, w):
-    cdef:
-        int start_index, end_index
-    start_index = i * number_dimensions
-    end_index = (i + 1) * number_dimensions
-
-    ri = w[start_index:end_index]
-    return ri
-
-

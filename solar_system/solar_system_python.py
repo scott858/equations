@@ -17,19 +17,7 @@ from scipy.integrate import odeint as sp_odeint
 # sys.setrecursionlimit(1000000)
 # resource.setrlimit(resource.RLIMIT_STACK, (2 ** 29, -1))
 
-ti = 0
-years = 1
-days_per_year = 365
-hours_per_day = 24
-seconds_per_hour = 3600
-tf = years * days_per_year * hours_per_day * seconds_per_hour * time_scale
-time_interval = tf - ti
-dt = 24 * 3600 * time_scale
-G = 6.67 * 10 ** -11
-G = (space_scale * space_scale) * G / (mass_scale * time_scale ** 2)
 
-number_particles = len(masses)
-number_dimensions = 3
 phase_index = 2
 start_v_index = number_particles * number_dimensions
 
@@ -62,11 +50,11 @@ def f(w, t):
     # f = dv / dt
     v_start = number_dimensions * number_particles
     v_slice = w[v_start:]
-    v_ = np.zeros_like(v_slice, dtype=np.float64)
+    v_ = np.zeros_like(v_slice, dtype=np.double)
     for i in range(number_particles):
         start_index = i * number_dimensions
         end_index = (i + 1) * number_dimensions
-        particle_force = np.zeros(number_dimensions, dtype=np.float64)
+        particle_force = np.zeros(number_dimensions, dtype=np.double)
         for j in range(0, i):
             particle_force += central_force(i, j, w)
         for j in range(i + 1, number_particles):
@@ -75,13 +63,13 @@ def f(w, t):
     return np.concatenate([v_slice, v_])
 
 
-w0 = np.array([], dtype=np.float64)
+w0 = np.array([], dtype=np.double)
 for x0i, y0i, z0i in zip(x0, y0, z0):
     w0 = np.concatenate([w0, [x0i], [y0i], [z0i]])
 for vx0i, vy0i, vz0i in zip(vx0, vy0, vz0):
     w0 = np.concatenate([w0, [vx0i], [vy0i], [vz0i]])
 
-t = np.arange(0, time_interval, dt, dtype=np.float64)
+t = np.arange(0, time_interval, dt, dtype=np.double)
 
 
 def run():
@@ -104,7 +92,8 @@ def solar_animate(w):
     widths = np.floor(widths)
     lines = sum([ax.plot([], [], [], '.', c=c, ms=width) for c, width in zip(colors, widths)], [])
 
-    lim = 20 * earth_distance
+    earth_distance = np.array([x_earth, y_earth, z_earth])
+    lim = 20 * np.sqrt(np.dot(earth_distance, earth_distance))
 
     ax.set_xlim3d([-lim, lim])
     ax.set_ylim3d([-lim, lim])
@@ -155,6 +144,8 @@ def solar_plot(w):
         z = w[:, number_dimensions * j + 2]
         ax.plot(x, y, z, c)
 
+
 if __name__ == '__main__':
     import cProfile
+
     cProfile.run('run()', sort='time')

@@ -1,23 +1,5 @@
-import numpy as np
-
-cdef:
+cdef public:
     double time_scale = 1
-
-    double x_earth = -2.9104 * 10 ** 10
-    double y_earth = 1.43576 * 10 ** 11
-    double z_earth = 2.39614 * 10 ** 7
-
-    earth_vector = np.array([x_earth, y_earth, z_earth])
-
-    double space_scale = np.dot(earth_vector, earth_vector)
-    double space_scale = np.sqrt(space_scale)
-    double earth_distance = space_scale
-    double space_scale = 1 / space_scale
-    double space_scale = 1
-
-    double m_earth = 5.9736 * 10 ** 24
-    double mass_scale = 1 / m_earth
-    double mass_scale = 1
 
     double m_sun = 1.9891 * 10 ** 30
     double m_mercury = 3.3020 * 10 ** 23
@@ -85,22 +67,6 @@ cdef:
     double vy_neptune = 4928.1
     double vy_pluto = -2884.6
 
-    vy0 = np.array(
-        [
-            vy_sun,
-            vy_mercury,
-            vy_venus,
-            vy_earth,
-            vy_mars,
-            vy_jupiter,
-            vy_saturn,
-            vy_uranus,
-            vy_neptune,
-            vy_pluto
-        ],
-        dtype=np.double
-    ) * space_scale / time_scale
-
     double vz_sun = -0.31676
     double vz_mercury = -1379.78
     double vz_venus = 1819.92
@@ -121,105 +87,5 @@ cdef:
     double time_interval = tf - ti
     double dt = 24 * 3600 * time_scale
     double G = 6.67 * 10 ** -11
-    int number_particles = len(masses)
     int number_dimensions = 3
-
-G = (space_scale * space_scale) * G / (mass_scale * time_scale ** 2)
-
-masses = np.array(
-    [
-        m_sun,
-        m_mercury,
-        m_venus,
-        m_earth,
-        m_mars,
-        m_jupiter,
-        m_saturn,
-        m_uranus,
-        m_neptune,
-        m_pluto
-    ],
-    dtype=np.double
-) * mass_scale
-
-
-vz0 = np.array(
-    [
-        vz_sun,
-        vz_mercury,
-        vz_venus,
-        vz_earth,
-        vz_mars,
-        vz_jupiter,
-        vz_saturn,
-        vz_uranus,
-        vz_neptune,
-        vz_pluto
-    ],
-    dtype=np.double
-) * space_scale / time_scale
-
-x0 = np.array(
-    [
-        x_sun,
-        x_mercury,
-        x_venus,
-        x_earth,
-        x_mars,
-        x_jupiter,
-        x_saturn,
-        x_uranus,
-        x_neptune,
-        x_pluto
-    ],
-    dtype=np.double
-) * space_scale
-
-y0 = np.array(
-    [
-        y_sun,
-        y_mercury,
-        y_venus,
-        y_earth,
-        y_mars,
-        y_jupiter,
-        y_saturn,
-        y_uranus,
-        y_neptune,
-        y_pluto
-    ],
-    dtype=np.double
-) * space_scale
-
-z0 = np.array(
-    [
-        z_sun,
-        z_mercury,
-        z_venus,
-        z_earth,
-        z_mars,
-        z_jupiter,
-        z_saturn,
-        z_uranus,
-        z_neptune,
-        z_pluto
-    ],
-    dtype=np.double
-) * space_scale
-
-vx0 = np.array(
-    [
-        vx_sun,
-        vx_mercury,
-        vx_venus,
-        vx_earth,
-        vx_mars,
-        vx_jupiter,
-        vx_saturn,
-        vx_uranus,
-        vx_neptune,
-        vx_pluto
-    ],
-    dtype=np.double
-) * space_scale / time_scale
 
