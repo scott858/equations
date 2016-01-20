@@ -50,6 +50,7 @@ def calc_julia(int resolution, double complex c,
 
     return np.asarray(counts)
 
+
 @boundscheck(False)
 @wraparound(False)
 def julia_fraction(int[:,::1] counts, int maxval=1000):

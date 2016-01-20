@@ -1,4 +1,4 @@
-# cython: profile=True
+# cython: profile=False
 
 # math.h `sin`, at compile time:
 from libc.math cimport sin

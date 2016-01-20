@@ -649,8 +649,8 @@ body.cython { font-family: courier; font-size: 12; }
 </pre><pre class="cython line score-0">&#xA0;<span class="">080</span>: </pre>
 <pre class="cython line score-0" onclick='toggleDiv(this)'>+<span class="">081</span>:     <span class="n">double</span> <span class="n">ti</span> <span class="o">=</span> <span class="mf">0</span></pre>
 <pre class='cython code score-0 '>  __pyx_v_9equations_12solar_system_23solar_system_derivative_ti = 0.0;
-</pre><pre class="cython line score-0" onclick='toggleDiv(this)'>+<span class="">082</span>:     <span class="n">double</span> <span class="n">years</span> <span class="o">=</span> <span class="mf">1</span></pre>
-<pre class='cython code score-0 '>  __pyx_v_9equations_12solar_system_23solar_system_derivative_years = 1.0;
+</pre><pre class="cython line score-0" onclick='toggleDiv(this)'>+<span class="">082</span>:     <span class="n">double</span> <span class="n">years</span> <span class="o">=</span> <span class="mf">10</span></pre>
+<pre class='cython code score-0 '>  __pyx_v_9equations_12solar_system_23solar_system_derivative_years = 10.0;
 </pre><pre class="cython line score-0" onclick='toggleDiv(this)'>+<span class="">083</span>:     <span class="n">double</span> <span class="n">days_per_year</span> <span class="o">=</span> <span class="mf">365</span></pre>
 <pre class='cython code score-0 '>  __pyx_v_9equations_12solar_system_23solar_system_derivative_days_per_year = 365.0;
 </pre><pre class="cython line score-0" onclick='toggleDiv(this)'>+<span class="">084</span>:     <span class="n">double</span> <span class="n">hours_per_day</span> <span class="o">=</span> <span class="mf">24</span></pre>
@@ -770,14 +770,14 @@ body.cython { font-family: courier; font-size: 12; }
   __pyx_t_14 = <span class='py_c_api'>PyObject_Length</span>(__pyx_t_10);<span class='error_goto'> if (unlikely(__pyx_t_14 == -1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}</span>
   <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_10); __pyx_t_10 = 0;
   __pyx_v_9equations_12solar_system_23solar_system_derivative_number_particles = __pyx_t_14;
-</pre><pre class="cython line score-5" onclick='toggleDiv(this)'>+<span class="">109</span>: <span class="k">cdef</span> <span class="kt">double</span>[<span class="p">:]</span> <span class="n">masses</span> <span class="o">=</span> <span class="n">m</span></pre>
+</pre><pre class="cython line score-5" onclick='toggleDiv(this)'>+<span class="">109</span>: <span class="k">cdef</span> <span class="kt">double</span>[<span class="p">::</span><span class="mf">1</span><span class="p">]</span> <span class="n">g_masses</span> <span class="o">=</span> <span class="n">m</span></pre>
 <pre class='cython code score-5 '>  __pyx_t_10 = <span class='pyx_c_api'>__Pyx_GetModuleGlobalName</span>(__pyx_n_s_m);<span class='error_goto'> if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 109; __pyx_clineno = __LINE__; goto __pyx_L1_error;}</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_10);
-  __pyx_t_15 = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_ds_double</span>(__pyx_t_10);
+  __pyx_t_15 = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_dc_double</span>(__pyx_t_10);
   if (unlikely(!__pyx_t_15.memview)) <span class='error_goto'>{__pyx_filename = __pyx_f[2]; __pyx_lineno = 109; __pyx_clineno = __LINE__; goto __pyx_L1_error;}</span>
   <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_10); __pyx_t_10 = 0;
-  __PYX_XDEC_MEMVIEW(&amp;__pyx_v_9equations_12solar_system_23solar_system_derivative_masses, 1);
-  __pyx_v_9equations_12solar_system_23solar_system_derivative_masses = __pyx_t_15;
+  __PYX_XDEC_MEMVIEW(&amp;__pyx_v_9equations_12solar_system_23solar_system_derivative_g_masses, 1);
+  __pyx_v_9equations_12solar_system_23solar_system_derivative_g_masses = __pyx_t_15;
   __pyx_t_15.memview = NULL;
   __pyx_t_15.data = NULL;
 </pre><pre class="cython line score-0">&#xA0;<span class="">110</span>: </pre>

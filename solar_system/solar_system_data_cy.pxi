@@ -79,12 +79,9 @@ cdef:
     double vz_pluto = -1271.99
 
     double ti = 0
-    double years = 10
     double days_per_year = 365
     double hours_per_day = 24
     double seconds_per_hour = 3600
-    double tf = years * days_per_year * hours_per_day * seconds_per_hour
-    double time_interval = tf - ti
     double dt = 24 * 3600
     double G = 6.67 * 10 ** (-11.0)
     int number_dimensions = 3
@@ -106,7 +103,7 @@ m = np.array(
 )
 
 cdef int number_particles = len(m)
-cdef double[:] masses = m
+cdef double[::1] g_masses = m
 
 vz0 = np.array(
     [

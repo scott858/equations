@@ -118,7 +118,7 @@ def solar_animate(w):
             line.set_3d_properties(z)
 
         fig.canvas.draw()
-        time_text.set_text(time_template % (i * dt / (seconds_per_hour * hours_per_day)))
+        time_text.set_text(time_template % (i))
         return lines
 
     trajectory_index = np.arange(1, w.shape[0], 10)
@@ -143,6 +143,8 @@ def solar_plot(w):
         y = w[:, number_dimensions * j + 1]
         z = w[:, number_dimensions * j + 2]
         ax.plot(x, y, z, c)
+
+    plt.show()
 
 
 if __name__ == '__main__':
